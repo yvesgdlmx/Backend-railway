@@ -1,8 +1,8 @@
 import express from 'express'
-import { obtenerRegistrosHoy } from '../controllers/registroController.js';
+import { obtenerRegistrosHoyYAyer } from '../controllers/registroController.js';
 
 const router = express.Router();
 
-router.get('/generadores/actualdia', obtenerRegistrosHoy)
+router.get('/generadores/actualdia', obtenerRegistrosHoyYAyer)
 
 export default router;

@@ -1,8 +1,8 @@
 import express from 'express'
-import { obtenerRegistrosHoy } from '../controllers/pulidoController.js';
+import { obtenerRegistrosHoyYAyer } from '../controllers/pulidoController.js';
 
 const router = express.Router();
 
-router.get('/pulido/actualdia', obtenerRegistrosHoy)
+router.get('/pulido/actualdia', obtenerRegistrosHoyYAyer)
 
 export default router;

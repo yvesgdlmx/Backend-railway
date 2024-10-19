@@ -71,7 +71,7 @@ app.use("/api/metas", metaManualesRoutes);
 /* Rutas de autenticación */
 app.use('/api/login', usuarioRoutes)
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 const servidor = app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });

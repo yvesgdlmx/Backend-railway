@@ -1,8 +1,8 @@
 import express from 'express'
-import { obtenerRegistrosHoy } from '../controllers/engraverController.js';
+import { obtenerRegistrosHoyYAyer } from '../controllers/engraverController.js';
 
 const router = express.Router();
 
-router.get('/engraver/actualdia', obtenerRegistrosHoy)
+router.get('/engraver/actualdia', obtenerRegistrosHoyYAyer)
 
 export default router;

@@ -1,8 +1,8 @@
 import express from 'express'
-import { obtenerRegistrosHoy } from '../controllers/bloqueoTerminadoController.js';
+import { obtenerRegistrosHoyYAyer } from '../controllers/bloqueoTerminadoController.js';
 
 const router = express.Router();
 
-router.get('/terminado/actualdia', obtenerRegistrosHoy)
+router.get('/terminado/actualdia', obtenerRegistrosHoyYAyer)
 
 export default router;

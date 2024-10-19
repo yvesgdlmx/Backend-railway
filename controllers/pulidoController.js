@@ -3,28 +3,42 @@ import Pulido from "../models/Pulido.js";
 import { Op } from "sequelize";
 import moment from 'moment-timezone';
 
-const obtenerRegistrosHoy = async (req, res) => {
+const obtenerRegistrosHoyYAyer = async (req, res) => {
     try {
-        // Obtener la fecha actual en la zona horaria de México
+        // Obtener la fecha actual y la fecha de ayer en la zona horaria de México
         const fechaHoy = moment().tz('America/Mexico_City').format('YYYY-MM-DD');
-        console.log(fechaHoy); // Obtiene la fecha actual en formato "YYYY-MM-DD"
-        
-        // Convertir la fecha de hoy a un formato compatible con la base de datos
+        const fechaAyer = moment().tz('America/Mexico_City').subtract(1, 'days').format('YYYY-MM-DD');
+
+        console.log(fechaHoy); // Fecha de hoy
+        console.log(fechaAyer); // Fecha de ayer
+
+        // Buscar registros de hoy y de ayer
         const registros = await Pulido.findAll({
             where: {
-                fecha: {
-                    [Op.gte]: new Date(`${fechaHoy}T00:00:00`), // Fecha de hoy a las 00:00:00 en la zona horaria local
-                    [Op.lt]: new Date(`${fechaHoy}T23:59:59.999`) // Fecha de hoy a las 23:59:59 en la zona horaria local
-                }
+                [Op.or]: [
+                    {
+                        fecha: {
+                            [Op.gte]: new Date(`${fechaHoy}T00:00:00`),
+                            [Op.lt]: new Date(`${fechaHoy}T23:59:59.999`)
+                        }
+                    },
+                    {
+                        fecha: {
+                            [Op.gte]: new Date(`${fechaAyer}T00:00:00`),
+                            [Op.lt]: new Date(`${fechaAyer}T23:59:59.999`)
+                        }
+                    }
+                ]
             }
         });
+
         res.json({ registros });
     } catch (error) {
-        console.error("Error al obtener los registros de hoy:", error);
-        res.status(500).json({ error: "Error al obtener los registros de hoy" });
+        console.error("Error al obtener los registros de hoy y ayer:", error);
+        res.status(500).json({ error: "Error al obtener los registros de hoy y ayer" });
     }
 }
 
 export {
-    obtenerRegistrosHoy
+    obtenerRegistrosHoyYAyer
 }
