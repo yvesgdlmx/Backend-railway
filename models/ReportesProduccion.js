@@ -29,6 +29,9 @@ const ReportesProduccion = db.define('conteo_estaciones', {
     hora_insercion: {
         type: DataTypes.TIME,
         defaultValue: DataTypes.NOW
+    },
+    sf: {
+        type: DataTypes.STRING
     }
 }, {
     timestamps: false
