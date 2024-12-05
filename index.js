@@ -19,7 +19,7 @@ import usuarioRoutes from './routes/usuarioRoutes.js'
 import manualRoutes  from './routes/manualRoutes.js'
 import historialRoutes from './routes/historialRoutes.js'
 import ReportesProduccionRoutes from './routes/ReportesProduccionRoutes.js'
-import reportesTrabajosNuevosRoutes from './routes/reporteTrabajosNuevosRoutes.js'
+import reportesTrabajosNuevosRoutes from './routes/reportesTrabajosNuevosRoutes.js'
 
 const app = express();
 app.use(express.json());
