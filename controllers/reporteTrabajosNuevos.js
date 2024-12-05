@@ -1,3 +1,4 @@
+import moment from 'moment';
 import TrabajosNuevos from '../models/TrabajosNuevos.js';
 
 const obtenerDatosTrabajosNuevos = async (req, res) => {
@@ -15,14 +16,14 @@ const obtenerDatosTrabajosNuevos = async (req, res) => {
             });
         }
 
-        // Convertir la fecha a un formato adecuado para la comparación
-        const fechaFormateada = new Date(fechaMasReciente).toISOString().split('T')[0];
+        // Usa moment para formatear la fecha correctamente
+        const fechaFormateada = moment(fechaMasReciente).format('YYYY-MM-DD');
         console.log("Fecha formateada para la consulta:", fechaFormateada);
 
         // Obtén todos los registros con la fecha más reciente
         const registros = await TrabajosNuevos.findAll({
             where: {
-                fecha: fechaFormateada
+                fecha: fechaFormateada // Asegúrate de que solo compare la fecha
             },
             order: [['hora', 'ASC']], // Ordena por hora de manera ascendente
             raw: true
