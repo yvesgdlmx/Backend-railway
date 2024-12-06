@@ -6,7 +6,6 @@ const obtenerDatosTrabajosNuevos = async (req, res) => {
         // Encuentra la fecha más reciente en la base de datos
         const fechaMasReciente = await TrabajosNuevos.max('fecha');
         console.log("Fecha más reciente encontrada:", fechaMasReciente);
-
         if (!fechaMasReciente) {
             return res.status(404).json({
                 msg: "No se encontraron registros de trabajos nuevos",
@@ -15,11 +14,11 @@ const obtenerDatosTrabajosNuevos = async (req, res) => {
                 }
             });
         }
-
-        // Usa moment para formatear la fecha correctamente
-        const fechaFormateada = moment(fechaMasReciente).format('YYYY-MM-DD');
+        
+        // Especifica el formato de entrada para la fecha
+        const fechaFormateada = moment(fechaMasReciente, 'YYYY-DD-MM').format('YYYY-MM-DD');
         console.log("Fecha formateada para la consulta:", fechaFormateada);
-
+        
         // Obtén todos los registros con la fecha más reciente
         const registros = await TrabajosNuevos.findAll({
             where: {
@@ -28,7 +27,7 @@ const obtenerDatosTrabajosNuevos = async (req, res) => {
             order: [['hora', 'ASC']], // Ordena por hora de manera ascendente
             raw: true
         });
-
+        
         res.json({
             total: registros.length,
             registros: registros
