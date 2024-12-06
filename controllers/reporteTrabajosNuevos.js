@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 import TrabajosNuevos from '../models/TrabajosNuevos.js';
+import { Op } from "sequelize";
 
 const obtenerDatosTrabajosNuevos = async (req, res) => {
     try {
