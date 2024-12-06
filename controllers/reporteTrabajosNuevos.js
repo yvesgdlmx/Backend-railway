@@ -1,5 +1,5 @@
-import moment from 'moment';
 import TrabajosNuevos from '../models/TrabajosNuevos.js';
+import moment from 'moment-timezone';
 
 const obtenerDatosTrabajosNuevos = async (req, res) => {
     try {
@@ -15,8 +15,8 @@ const obtenerDatosTrabajosNuevos = async (req, res) => {
             });
         }
         
-        // Especifica el formato de entrada para la fecha
-        const fechaFormateada = moment(fechaMasReciente, 'YYYY-DD-MM').format('YYYY-MM-DD');
+        // Ajusta la zona horaria al formatear la fecha
+        const fechaFormateada = moment(fechaMasReciente).tz('America/Mexico_City').format('YYYY-MM-DD');
         console.log("Fecha formateada para la consulta:", fechaFormateada);
         
         // Obtén todos los registros con la fecha más reciente
