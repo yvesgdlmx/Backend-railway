@@ -17,10 +17,6 @@ const obtenerDatosTrabajosNuevos = async (req, res) => {
             });
         }
 
-        // Convierte la fecha a la zona horaria de México y formatea
-        const fechaFormateada = moment(fechaMasReciente).tz('America/Mexico_City').format('YYYY-MM-DD');
-        console.log("Fecha formateada para la consulta:", fechaFormateada);
-
         // Obtén todos los registros con la fecha más reciente
         const registros = await TrabajosNuevos.findAll({
             where: {
