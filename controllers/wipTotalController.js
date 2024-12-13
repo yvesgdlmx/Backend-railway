@@ -6,7 +6,7 @@ const obtenerWipTotal = async (req, res) => {
     const { anio, mes, dia } = req.params; // Obtener año, mes y día de los parámetros de la URL 
     try { 
         // Crear la fecha en formato 'YYYY-MM-DD' sin la hora
-        const fechaConsulta = moment.tz(`${anio}-${mes}-${dia}`, 'America/Mexico_City').format('YYYY-MM-DD'); 
+        const fechaConsulta = moment.tz(`${anio}-${mes}-${dia}`).format('YYYY-MM-DD'); 
 
         console.log("Fecha a consultar:", fechaConsulta); // Debugging
 
