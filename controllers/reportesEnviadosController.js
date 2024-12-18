@@ -15,14 +15,17 @@ const obtenerDatosReportesEnviados = async (req, res) => {
             });
         }
 
-        // Ajusta la fecha como cadena 'YYYY-MM-DD'
-        const fechaFormateada = moment.tz(fechaMasReciente, 'UTC').format('YYYY-MM-DD');
+        // Ajusta la fecha para evitar problemas de zona horaria
+        const fechaFormateada = moment(fechaMasReciente).format('YYYY-MM-DD');
         console.log("Fecha ajustada para la consulta:", fechaFormateada);
 
-        // Consulta exacta solo por fecha
+        // Consulta por el rango del día completo
         const registros = await ReportesEnviados.findAll({
             where: {
-                fecha: fechaFormateada // Busca exactamente por la fecha, sin horas
+                fecha: {
+                    [Op.gte]: new Date(`${fechaFormateada}T00:00:00Z`),
+                    [Op.lt]: new Date(`${fechaFormateada}T23:59:59.999Z`)
+                }
             },
             order: [['id', 'ASC']],
             raw: true
