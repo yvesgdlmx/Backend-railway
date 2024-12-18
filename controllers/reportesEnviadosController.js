@@ -1,3 +1,4 @@
+import moment from 'moment-timezone';
 import ReportesEnviados from '../models/ReportesEnviados.js';
 import { Op } from "sequelize";
 
@@ -6,7 +7,7 @@ const obtenerDatosReportesEnviados = async (req, res) => {
         // Encuentra la fecha más reciente en la base de datos
         const fechaMasReciente = await ReportesEnviados.max('fecha');
         console.log("Fecha más reciente encontrada en bruto:", fechaMasReciente);
-        
+
         if (!fechaMasReciente) {
             return res.status(404).json({
                 msg: "No se encontraron registros de reportes enviados",
@@ -16,21 +17,24 @@ const obtenerDatosReportesEnviados = async (req, res) => {
             });
         }
 
-        // Asegúrate de que la fecha más reciente esté en el formato correcto
-        const fechaFormateada = new Date(fechaMasReciente).toISOString().split('T')[0]; // Esto te dará 'YYYY-MM-DD'
-        console.log("Fecha formateada para la consulta:", fechaFormateada);
-        
+        // Ajusta la fecha a la zona horaria de México
+        const fechaInicio = moment.tz(fechaMasReciente, 'America/Mexico_City').startOf('day').toDate();
+        const fechaFin = moment.tz(fechaMasReciente, 'America/Mexico_City').endOf('day').toDate();
+
+        console.log("Fecha ajustada para la consulta:", fechaInicio, fechaFin);
+
         // Obtén todos los registros con la fecha más reciente
         const registros = await ReportesEnviados.findAll({
             where: {
                 fecha: {
-                    [Op.eq]: fechaFormateada // Usa la fecha formateada
+                    [Op.gte]: fechaInicio,
+                    [Op.lt]: fechaFin
                 }
             },
-            order: [['id', 'ASC']], // Cambia el orden según necesites
+            order: [['id', 'ASC']],
             raw: true
         });
-        
+
         res.json({
             total: registros.length,
             registros: registros
@@ -44,6 +48,4 @@ const obtenerDatosReportesEnviados = async (req, res) => {
     }
 };
 
-export {
-    obtenerDatosReportesEnviados
-};
+export { obtenerDatosReportesEnviados };
