@@ -15,19 +15,14 @@ const obtenerDatosReportesEnviados = async (req, res) => {
             });
         }
 
-        // Ajusta la fecha a la zona horaria de México y suma un día
-        const fechaInicio = moment.tz(fechaMasReciente, 'UTC').add(1, 'day').startOf('day').toDate();
-        const fechaFin = moment.tz(fechaMasReciente, 'UTC').add(1, 'day').endOf('day').toDate();
+        // Ajusta la fecha como cadena 'YYYY-MM-DD'
+        const fechaFormateada = moment.tz(fechaMasReciente, 'UTC').format('YYYY-MM-DD');
+        console.log("Fecha ajustada para la consulta:", fechaFormateada);
 
-        console.log("Fecha ajustada para la consulta:", fechaInicio, fechaFin);
-
-        // Obtén todos los registros con la fecha ajustada
+        // Consulta exacta solo por fecha
         const registros = await ReportesEnviados.findAll({
             where: {
-                fecha: {
-                    [Op.gte]: fechaInicio,
-                    [Op.lt]: fechaFin
-                }
+                fecha: fechaFormateada // Busca exactamente por la fecha, sin horas
             },
             order: [['id', 'ASC']],
             raw: true
