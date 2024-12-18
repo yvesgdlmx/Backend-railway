@@ -11,19 +11,17 @@ const obtenerDatosReportesEnviados = async (req, res) => {
         if (!fechaMasReciente) {
             return res.status(404).json({
                 msg: "No se encontraron registros de reportes enviados",
-                debug: {
-                    totalRegistros: await ReportesEnviados.count()
-                }
+                debug: { totalRegistros: await ReportesEnviados.count() }
             });
         }
 
-        // Ajusta la fecha a la zona horaria de México
-        const fechaInicio = moment.tz(fechaMasReciente, 'America/Mexico_City').startOf('day').toDate();
-        const fechaFin = moment.tz(fechaMasReciente, 'America/Mexico_City').endOf('day').toDate();
+        // Ajusta la fecha a la zona horaria de México y suma un día
+        const fechaInicio = moment.tz(fechaMasReciente, 'UTC').add(1, 'day').startOf('day').toDate();
+        const fechaFin = moment.tz(fechaMasReciente, 'UTC').add(1, 'day').endOf('day').toDate();
 
         console.log("Fecha ajustada para la consulta:", fechaInicio, fechaFin);
 
-        // Obtén todos los registros con la fecha más reciente
+        // Obtén todos los registros con la fecha ajustada
         const registros = await ReportesEnviados.findAll({
             where: {
                 fecha: {
