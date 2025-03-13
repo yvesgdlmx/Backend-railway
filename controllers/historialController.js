@@ -245,27 +245,24 @@ const obtenerRegistrosTurnos = async (req, res) => {
     try {
       // Objeto para almacenar los registros agrupados por modelo
       const registrosPorModelo = {};
-      // Arreglos para almacenar por separado los registros especiales
+      // Arreglos para almacenar por separado los registros especiales de "surtido", "produccion", "AR" y "Desbloqueo"
       let surtido = [];
       let produccion = [];
       let ar = [];
       let desbloqueo = [];
-      // Calcular el rango del turno nocturno:
-      // Desde las 22:00 del día anterior hasta las 21:59 del día solicitado
-      const fechaInicio = moment(`${anio}-${mes}-${dia}`, "YYYY-MM-DD")
-        .subtract(1, 'days')
-        .set({ hour: 22, minute: 0, second: 0 });
-      const fechaFin = moment(`${anio}-${mes}-${dia}`, "YYYY-MM-DD")
-        .set({ hour: 21, minute: 59, second: 59 });
+      // Calcular el rango del día solicitado utilizando la zona horaria de México
+      const fechaInicio = moment(`${anio}-${mes}-${dia} 00:00:00`, "YYYY-MM-DD HH:mm:ss");
+      const fechaFin = moment(fechaInicio).add(1, "days").startOf("day");
       // Iterar sobre cada modelo
       for (const Modelo of modelos) {
-        // Obtener registros para el rango completo de la jornada
+        // Obtener únicamente los registros del día solicitado
         const registrosModelo = await Modelo.findAll({
           where: {
             fecha: {
-              [Op.between]: [fechaInicio.toDate(), fechaFin.toDate()]
-            }
-          }
+              [Op.gte]: fechaInicio.toDate(),
+              [Op.lt]: fechaFin.toDate(),
+            },
+          },
         });
         // Mapear cada registro para formatear la fecha y obtener el nombre adecuado
         const registrosFormateados = registrosModelo.map((registro) => {
@@ -273,44 +270,84 @@ const obtenerRegistrosTurnos = async (req, res) => {
           const nombre = nombreParts.length > 1 ? nombreParts[0].trim() : registro.name;
           return {
             ...registro.toJSON(),
-            fecha: moment(registro.fecha).format("YYYY-MM-DD"),
+            // Se formatea la fecha utilizando la zona horaria de México
+            fecha: moment(registro.fecha).format("YYYY-MM-DD HH:mm:ss"),
             name: nombre,
           };
         });
-        // Si el modelo es "manuales", separar los registros especiales
+        // Si el modelo es "manuales", se separan los registros especiales
         if (Modelo.name === "manuales") {
-          surtido.push(...registrosFormateados.filter(r => 
-            ["19 LENS LOG", "20 LENS LOG"].includes(r.name)));
-          
-          produccion.push(...registrosFormateados.filter(r => 
-            r.name === "32 JOB COMPLETE"));
-          
-          ar.push(...registrosFormateados.filter(r => 
-            ["91 VELOCITY 1", "92 VELOCITY 2", "52 FUSION", "53 1200 D", 
-             "55 TLF 1200.1", "56 TLF 1200.2"].includes(r.name)));
-          
-          desbloqueo.push(...registrosFormateados.filter(r => 
-            r.name === "320 DEBLOCKING 1"));
+          // Registros para "surtido": casos con name "19 LENS LOG" o "20 LENS LOG"
+          const registrosSurtido = registrosFormateados.filter(
+            (registro) =>
+              registro.name === "19 LENS LOG" || registro.name === "20 LENS LOG"
+          );
+          // Registros para "produccion": casos con name "32 JOB COMPLETE"
+          const registrosProduccion = registrosFormateados.filter(
+            (registro) => registro.name === "32 JOB COMPLETE"
+          );
+          // Registros para "AR": casos con name "91 VELOCITY 1", "92 VELOCITY 2", "52 FUSION", "53 1200 D", "55 TLF 1200.1" o "56 TLF 1200.2"
+          const registrosAR = registrosFormateados.filter((registro) =>
+            [
+              "91 VELOCITY 1",
+              "92 VELOCITY 2",
+              "52 FUSION",
+              "53 1200 D",
+              "55 TLF 1200.1",
+              "56 TLF 1200.2",
+            ].includes(registro.name)
+          );
+          // Registros para "Desbloqueo": casos con name "320 DEBLOCKING 1"
+          const registrosDesbloqueo = registrosFormateados.filter(
+            (registro) => registro.name === "320 DEBLOCKING 1"
+          );
           // Los demás registros se mantienen en "manuales"
-          registrosPorModelo[Modelo.name] = registrosFormateados.filter(r => 
-            !["19 LENS LOG", "20 LENS LOG", "32 JOB COMPLETE",
-              "91 VELOCITY 1", "92 VELOCITY 2", "52 FUSION", "53 1200 D",
-              "55 TLF 1200.1", "56 TLF 1200.2", "320 DEBLOCKING 1"].includes(r.name));
+          const registrosManuales = registrosFormateados.filter(
+            (registro) =>
+              registro.name !== "19 LENS LOG" &&
+              registro.name !== "20 LENS LOG" &&
+              registro.name !== "32 JOB COMPLETE" &&
+              ![
+                "91 VELOCITY 1",
+                "92 VELOCITY 2",
+                "52 FUSION",
+                "53 1200 D",
+                "55 TLF 1200.1",
+                "56 TLF 1200.2",
+              ].includes(registro.name) &&
+              registro.name !== "320 DEBLOCKING 1"
+          );
+          registrosPorModelo[Modelo.name] = registrosManuales;
+          surtido.push(...registrosSurtido);
+          produccion.push(...registrosProduccion);
+          ar.push(...registrosAR);
+          desbloqueo.push(...registrosDesbloqueo);
         } else {
+          // Para los demás modelos, se asignan los registros obtenidos sin modificación de orden
           registrosPorModelo[Modelo.name] = registrosFormateados;
         }
       }
-      // Agregar las secciones especiales si tienen registros
-      if (surtido.length > 0) registrosPorModelo["surtido"] = surtido;
-      if (produccion.length > 0) registrosPorModelo["produccion"] = produccion;
-      if (ar.length > 0) registrosPorModelo["AR"] = ar;
-      if (desbloqueo.length > 0) registrosPorModelo["Desbloqueo"] = desbloqueo;
+      // Agregar las secciones "surtido", "produccion", "AR" y "Desbloqueo" a la respuesta, si existen registros en ellas
+      if (surtido.length > 0) {
+        registrosPorModelo["surtido"] = surtido;
+      }
+      if (produccion.length > 0) {
+        registrosPorModelo["produccion"] = produccion;
+      }
+      if (ar.length > 0) {
+        registrosPorModelo["AR"] = ar;
+      }
+      if (desbloqueo.length > 0) {
+        registrosPorModelo["Desbloqueo"] = desbloqueo;
+      }
       res.json({ registros: registrosPorModelo });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Error al obtener los registros" });
     }
   };
+  export default obtenerRegistrosTurnos;
+  
 /*const obtenerRegistrosTurnos = async (req, res) => {
     const { nombreModelo, anio, mes, dia } = req.params;
     const Modelo = modelos[nombreModelo];
