@@ -271,7 +271,7 @@ const obtenerRegistrosTurnos = async (req, res) => {
           return {
             ...registro.toJSON(),
             // Se formatea la fecha utilizando la zona horaria de México
-            fecha: moment.tz(registro.fecha, "America/Mexico_City").format("YYYY-MM-DD HH:mm:ss"),
+            fecha: moment(registro.fecha).format("YYYY-MM-DD HH:mm:ss"),
             name: nombre,
           };
         });
@@ -421,7 +421,7 @@ const obtenerRegistrosTurnosRangos = async (req, res) => {
           return {
             ...registro.toJSON(),
             // Formateamos la fecha usando moment y la zona horaria deseada
-            fecha: moment(registro.fecha).tz("America/Mexico_City").format("YYYY-MM-DD"),
+            fecha: moment(registro.fecha).format("YYYY-MM-DD"),
             name: nombre
           };
         });
@@ -478,7 +478,7 @@ const obtenerRegistrosTurnosRangos = async (req, res) => {
       res.status(500).json({ error: "Error al obtener los registros" });
     }
   };
-  
+
 export {
     obtenerRegistros,
     obtenerRegistrosTurnos,
