@@ -251,7 +251,7 @@ const obtenerRegistrosTurnos = async (req, res) => {
       let ar = [];
       let desbloqueo = [];
       // Calcular el rango del día solicitado utilizando la zona horaria de México
-      const fechaInicio = moment.tz(`${anio}-${mes}-${dia} 00:00:00`, "YYYY-MM-DD HH:mm:ss", "America/Mexico_City");
+      const fechaInicio = moment(`${anio}-${mes}-${dia} 00:00:00`, "YYYY-MM-DD HH:mm:ss");
       const fechaFin = moment(fechaInicio).add(1, "days").startOf("day");
       // Iterar sobre cada modelo
       for (const Modelo of modelos) {
@@ -271,7 +271,7 @@ const obtenerRegistrosTurnos = async (req, res) => {
           return {
             ...registro.toJSON(),
             // Se formatea la fecha utilizando la zona horaria de México
-            fecha: moment(registro.fecha).format("YYYY-MM-DD HH:mm:ss"),
+            fecha: moment(registro.fecha),
             name: nombre,
           };
         });
@@ -347,7 +347,6 @@ const obtenerRegistrosTurnos = async (req, res) => {
     }
   };
   export default obtenerRegistrosTurnos;
-
 /*const obtenerRegistrosTurnos = async (req, res) => {
     const { nombreModelo, anio, mes, dia } = req.params;
     const Modelo = modelos[nombreModelo];
@@ -477,7 +476,7 @@ const obtenerRegistrosTurnosRangos = async (req, res) => {
       console.error(error);
       res.status(500).json({ error: "Error al obtener los registros" });
     }
-  };
+  };  
 
 export {
     obtenerRegistros,
