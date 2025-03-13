@@ -245,14 +245,20 @@ const obtenerRegistrosTurnos = async (req, res) => {
     try {
       // Objeto para almacenar los registros agrupados por modelo
       const registrosPorModelo = {};
-      // Arreglos para almacenar por separado los registros especiales de "surtido", "produccion", "AR" y "Desbloqueo"
+      // Arreglos para almacenar por separado los registros especiales
       let surtido = [];
       let produccion = [];
       let ar = [];
       let desbloqueo = [];
       // Calcular el rango del día solicitado utilizando la zona horaria de México
-      const fechaInicio = moment(`${anio}-${mes}-${dia} 00:00:00`, "YYYY-MM-DD HH:mm:ss");
-      const fechaFin = moment(fechaInicio).add(1, "days").startOf("day");
+      const fechaInicio = moment.tz(
+        `${anio}-${mes}-${dia} 00:00:00`,
+        "YYYY-MM-DD HH:mm:ss",
+        "America/Mexico_City"
+      );
+      const fechaFin = moment.tz(fechaInicio, "America/Mexico_City")
+        .add(1, "days")
+        .startOf("day");
       // Iterar sobre cada modelo
       for (const Modelo of modelos) {
         // Obtener únicamente los registros del día solicitado
@@ -264,14 +270,16 @@ const obtenerRegistrosTurnos = async (req, res) => {
             },
           },
         });
-        // Mapear cada registro para formatear la fecha y obtener el nombre adecuado
+        // Mapear cada registro: formatear la fecha utilizando la zona horaria de México
         const registrosFormateados = registrosModelo.map((registro) => {
           const nombreParts = registro.name.split("-");
-          const nombre = nombreParts.length > 1 ? nombreParts[0].trim() : registro.name;
+          const nombre =
+            nombreParts.length > 1 ? nombreParts[0].trim() : registro.name;
           return {
             ...registro.toJSON(),
-            // Se formatea la fecha utilizando la zona horaria de México
-            fecha: moment(registro.fecha).format("YYYY-MM-DD HH:mm:ss"),
+            fecha: moment
+              .tz(registro.fecha, "America/Mexico_City")
+              .format("YYYY-MM-DD HH:mm:ss"),
             name: nombre,
           };
         });
@@ -286,7 +294,7 @@ const obtenerRegistrosTurnos = async (req, res) => {
           const registrosProduccion = registrosFormateados.filter(
             (registro) => registro.name === "32 JOB COMPLETE"
           );
-          // Registros para "AR": casos con name "91 VELOCITY 1", "92 VELOCITY 2", "52 FUSION", "53 1200 D", "55 TLF 1200.1" o "56 TLF 1200.2"
+          // Registros para "AR": casos con name en el arreglo
           const registrosAR = registrosFormateados.filter((registro) =>
             [
               "91 VELOCITY 1",
@@ -318,16 +326,16 @@ const obtenerRegistrosTurnos = async (req, res) => {
               registro.name !== "320 DEBLOCKING 1"
           );
           registrosPorModelo[Modelo.name] = registrosManuales;
-          surtido.push(...registrosSurtido);
-          produccion.push(...registrosProduccion);
-          ar.push(...registrosAR);
-          desbloqueo.push(...registrosDesbloqueo);
+          surtido = surtido.concat(registrosSurtido);
+          produccion = produccion.concat(registrosProduccion);
+          ar = ar.concat(registrosAR);
+          desbloqueo = desbloqueo.concat(registrosDesbloqueo);
         } else {
-          // Para los demás modelos, se asignan los registros obtenidos sin modificación de orden
+          // Para otros modelos, se asignan los registros sin modificaciones adicionales
           registrosPorModelo[Modelo.name] = registrosFormateados;
         }
       }
-      // Agregar las secciones "surtido", "produccion", "AR" y "Desbloqueo" a la respuesta, si existen registros en ellas
+      // Agregar las secciones especiales a la respuesta, si existen registros en ellas
       if (surtido.length > 0) {
         registrosPorModelo["surtido"] = surtido;
       }
