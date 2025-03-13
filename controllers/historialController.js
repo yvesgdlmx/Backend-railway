@@ -252,10 +252,10 @@ const obtenerRegistrosTurnos = async (req, res) => {
       let desbloqueo = [];
       // Calcular el rango del turno nocturno:
       // Desde las 22:00 del día anterior hasta las 21:59 del día solicitado
-      const fechaInicio = moment.tz(`${anio}-${mes}-${dia}`, "YYYY-MM-DD", "America/Mexico_City")
+      const fechaInicio = moment(`${anio}-${mes}-${dia}`, "YYYY-MM-DD")
         .subtract(1, 'days')
         .set({ hour: 22, minute: 0, second: 0 });
-      const fechaFin = moment.tz(`${anio}-${mes}-${dia}`, "YYYY-MM-DD", "America/Mexico_City")
+      const fechaFin = moment(`${anio}-${mes}-${dia}`, "YYYY-MM-DD")
         .set({ hour: 21, minute: 59, second: 59 });
       // Iterar sobre cada modelo
       for (const Modelo of modelos) {
@@ -273,7 +273,7 @@ const obtenerRegistrosTurnos = async (req, res) => {
           const nombre = nombreParts.length > 1 ? nombreParts[0].trim() : registro.name;
           return {
             ...registro.toJSON(),
-            fecha: moment.tz(registro.fecha, "America/Mexico_City").format("YYYY-MM-DD"),
+            fecha: moment(registro.fecha).format("YYYY-MM-DD"),
             name: nombre,
           };
         });
