@@ -271,7 +271,7 @@ const obtenerRegistrosTurnos = async (req, res) => {
           return {
             ...registro.toJSON(),
             // Se formatea la fecha utilizando la zona horaria de México
-            fecha: moment(registro.fecha),
+            fecha: moment(registro.fecha).format("YYYY-MM-DD HH:mm:ss"),
             name: nombre,
           };
         });
