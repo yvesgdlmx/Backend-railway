@@ -25,6 +25,7 @@ import wipTotalRoutes from './routes/wipTotalRoutes.js'
 import reportesEnviadosRoutes from './routes/reportesEnviadosRoutes.js'
 import reporteResumenRoutes from './routes/reporteResumenRoutes.js'
 import trabajosSinMovimientosRoutes from './routes/trabajosSinMovimientosRoutes.js'
+import facturacionRoutes from './routes/facturacionRoutes.js'
 
 const app = express();
 app.use(express.json());
@@ -85,6 +86,8 @@ app.use('/api/reportes', wipTotalRoutes)
 app.use('/api/reportes', reportesEnviadosRoutes)
 app.use('/api/reportes', reporteResumenRoutes)
 app.use('/api/reportes', trabajosSinMovimientosRoutes)
+/* Reportes de Facturacion */
+app.use('/api/reportes', facturacionRoutes)
 
 const PORT = process.env.PORT || 3000;
 const servidor = app.listen(PORT, () => {
