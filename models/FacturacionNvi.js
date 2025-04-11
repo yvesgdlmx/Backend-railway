@@ -118,6 +118,10 @@ const FacturacionNvi = db.define('facturacion_nvis', {
     uv_f: {
         type: DataTypes.FLOAT,
         allowNull: true
+    },
+    total_real: {
+        type: DataTypes.FLOAT,
+        allowNull: true
     }
 }, {
     timestamps: false
