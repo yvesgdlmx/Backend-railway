@@ -1,5 +1,4 @@
 import { Op, fn, col, where } from "sequelize";
-import Mermas from "../models/Mermas.js";
 import ConteoMermas from "../models/mermas/ConteoMermas.js";
 import Manual from "../models/Manual.js";
 import RazonesDeMerma from "../models/mermas/RazonesDeMerma.js";
@@ -12,47 +11,6 @@ const formatearFechaLocal = (fecha) => {
   return `${anio}-${mes}-${dia}`;
 };
 
-const obtenerRegistrosMermas = async (req, res) => {
-  const { anio, semana } = req.params;
-  try {
-    const registros = await Mermas.findAll({
-      where: {
-        [Op.and]: [
-          where(fn('YEAR', col('fecha')), Number(anio)),
-          { semana: Number(semana) }
-        ]
-      }
-    });
-    res.json({ registros });
-  } catch (error) {
-    console.error("Error al obtener registros de Mermas:", error);
-    res.status(500).json({ error: "Error al obtener los registros de mermas" });
-  }
-};
-
-const obtenerRegistrosMermasHoyYAyer = async (req, res) => {
-  try {
-    // Crear objetos Date para hoy y ayer
-    const hoy = new Date();
-    const ayer = new Date();
-    ayer.setDate(hoy.getDate() - 1);
-    // Convertir las fechas a formato 'YYYY-MM-DD'
-    const fechaHoy = hoy.toISOString().slice(0, 10);
-    const fechaAyer = ayer.toISOString().slice(0, 10);
-    // Consultar registros cuya fecha sea igual a hoy o a ayer
-    const registros = await Mermas.findAll({
-      where: {
-        fecha: {
-          [Op.or]: [fechaHoy, fechaAyer]
-        }
-      }
-    });
-    res.json({ registros });
-  } catch (error) {
-    console.error("Error al obtener registros de Mermas:", error);
-    res.status(500).json({ error: "Error al obtener los registros de mermas" });
-  }
-};
 
 const obtenerRegistrosConteoMermasHoyYAyer = async (req, res) => {
   try {
@@ -135,4 +93,4 @@ const obtenerRegistrosRazonesMermasHoyYAyer = async (req, res) => {
   }
 };
 
-export { obtenerRegistrosMermas, obtenerRegistrosMermasHoyYAyer, obtenerRegistrosConteoMermasHoyYAyer, obtenerRegistrosManualHoyYAyer, obtenerRegistrosRazonesMermasHoyYAyer };
+export { obtenerRegistrosConteoMermasHoyYAyer, obtenerRegistrosManualHoyYAyer, obtenerRegistrosRazonesMermasHoyYAyer };
