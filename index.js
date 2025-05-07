@@ -26,6 +26,7 @@ import reportesEnviadosRoutes from './routes/reportesEnviadosRoutes.js'
 import reporteResumenRoutes from './routes/reporteResumenRoutes.js'
 import trabajosSinMovimientosRoutes from './routes/trabajosSinMovimientosRoutes.js'
 import facturacionRoutes from './routes/facturacionRoutes.js'
+import mermasRoutes from './routes/mermasRoutes.js'
 
 const app = express();
 app.use(express.json());
@@ -88,6 +89,8 @@ app.use('/api/reportes', reporteResumenRoutes)
 app.use('/api/reportes', trabajosSinMovimientosRoutes)
 /* Reportes de Facturacion */
 app.use('/api/reportes', facturacionRoutes)
+/* Rutas para mermas */
+app.use('/api/mermas', mermasRoutes)
 
 const PORT = process.env.PORT || 3000;
 const servidor = app.listen(PORT, () => {
