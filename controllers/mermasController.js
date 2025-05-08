@@ -1,16 +1,14 @@
 import { Op, fn, col, where } from "sequelize";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 import ConteoMermas from "../models/mermas/ConteoMermas.js";
 import Manual from "../models/Manual.js";
 import RazonesDeMerma from "../models/mermas/RazonesDeMerma.js";
-// Configurar zona horaria por defecto
-moment.tz.setDefault("America/Mexico_City");
-
 const obtenerRegistrosConteoMermasHoyYAyer = async (req, res) => {
   try {
-    // Obtener fechas usando moment-timezone
-    const hoy = moment().format('YYYY-MM-DD');
-    const ayer = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    // Obtener fechas usando moment-timezone de forma local
+    const hoy = moment.tz("America/Mexico_City").format('YYYY-MM-DD');
+    const ayer = moment.tz("America/Mexico_City").subtract(1, 'days').format('YYYY-MM-DD');
+    
     const registros = await ConteoMermas.findAll({
       where: {
         fecha: {
@@ -26,9 +24,10 @@ const obtenerRegistrosConteoMermasHoyYAyer = async (req, res) => {
 };
 const obtenerRegistrosManualHoyYAyer = async (req, res) => {
   try {
-    // Obtener fechas usando moment-timezone
-    const hoy = moment().format('YYYY-MM-DD');
-    const ayer = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    // Obtener fechas usando moment-timezone de forma local
+    const hoy = moment.tz("America/Mexico_City").format('YYYY-MM-DD');
+    const ayer = moment.tz("America/Mexico_City").subtract(1, 'days').format('YYYY-MM-DD');
+    
     const registros = await Manual.findAll({
       where: {
         fecha: {
@@ -47,9 +46,10 @@ const obtenerRegistrosManualHoyYAyer = async (req, res) => {
 };
 const obtenerRegistrosRazonesMermasHoyYAyer = async (req, res) => {
   try {
-    // Obtener fechas usando moment-timezone
-    const hoy = moment().format('YYYY-MM-DD');
-    const ayer = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    // Obtener fechas usando moment-timezone de forma local
+    const hoy = moment.tz("America/Mexico_City").format('YYYY-MM-DD');
+    const ayer = moment.tz("America/Mexico_City").subtract(1, 'days').format('YYYY-MM-DD');
+    
     const registros = await RazonesDeMerma.findAll({
       where: {
         fecha: {
