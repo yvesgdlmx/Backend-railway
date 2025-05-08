@@ -6,8 +6,8 @@ import RazonesDeMerma from "../models/mermas/RazonesDeMerma.js";
 const obtenerRegistrosConteoMermasHoyYAyer = async (req, res) => {
   try {
     // Obtener fechas usando moment-timezone de forma local
-    const hoy = moment.format('YYYY-MM-DD');
-    const ayer = moment.subtract(1, 'days').format('YYYY-MM-DD');
+    const hoy = moment().format('YYYY-MM-DD');
+    const ayer = moment().subtract(1, 'days').format('YYYY-MM-DD');
     
     const registros = await ConteoMermas.findAll({
       where: {
@@ -25,8 +25,8 @@ const obtenerRegistrosConteoMermasHoyYAyer = async (req, res) => {
 const obtenerRegistrosManualHoyYAyer = async (req, res) => {
   try {
     // Obtener fechas usando moment-timezone de forma local
-    const hoy = moment.format('YYYY-MM-DD');
-    const ayer = moment.subtract(1, 'days').format('YYYY-MM-DD');
+    const hoy = moment().format('YYYY-MM-DD');
+    const ayer = moment().subtract(1, 'days').format('YYYY-MM-DD');
     
     const registros = await Manual.findAll({
       where: {
@@ -47,8 +47,8 @@ const obtenerRegistrosManualHoyYAyer = async (req, res) => {
 const obtenerRegistrosRazonesMermasHoyYAyer = async (req, res) => {
   try {
     // Obtener fechas usando moment-timezone de forma local
-    const hoy = moment.format('YYYY-MM-DD');
-    const ayer = moment.subtract(1, 'days').format('YYYY-MM-DD');
+    const hoy = moment().format('YYYY-MM-DD');
+    const ayer = moment().subtract(1, 'days').format('YYYY-MM-DD');
     
     const registros = await RazonesDeMerma.findAll({
       where: {
