@@ -1,19 +1,29 @@
-import { Op, fn, col, where } from "sequelize";
-import moment from "moment-timezone";
+import { Op } from "sequelize";
+import moment from 'moment-timezone';
 import ConteoMermas from "../models/mermas/ConteoMermas.js";
 import Manual from "../models/Manual.js";
 import RazonesDeMerma from "../models/mermas/RazonesDeMerma.js";
 const obtenerRegistrosConteoMermasHoyYAyer = async (req, res) => {
   try {
-    // Obtener fechas usando moment-timezone de forma local
-    const hoy = moment().format('YYYY-MM-DD');
-    const ayer = moment().subtract(1, 'days').format('YYYY-MM-DD');
-    
+    // Obtener fechas en la zona horaria de México con moment-timezone
+    const fechaHoy = moment.tz('America/Mexico_City').format('YYYY-MM-DD');
+    const fechaAyer = moment.tz('America/Mexico_City').subtract(1, 'days').format('YYYY-MM-DD');
     const registros = await ConteoMermas.findAll({
       where: {
-        fecha: {
-          [Op.or]: [hoy, ayer]
-        }
+        [Op.or]: [
+          {
+            fecha: {
+              [Op.gte]: new Date(`${fechaHoy}T00:00:00`),
+              [Op.lt]: new Date(`${fechaHoy}T23:59:59.999`)
+            }
+          },
+          {
+            fecha: {
+              [Op.gte]: new Date(`${fechaAyer}T00:00:00`),
+              [Op.lt]: new Date(`${fechaAyer}T23:59:59.999`)
+            }
+          }
+        ]
       }
     });
     res.json({ registros });
@@ -24,15 +34,24 @@ const obtenerRegistrosConteoMermasHoyYAyer = async (req, res) => {
 };
 const obtenerRegistrosManualHoyYAyer = async (req, res) => {
   try {
-    // Obtener fechas usando moment-timezone de forma local
-    const hoy = moment().format('YYYY-MM-DD');
-    const ayer = moment().subtract(1, 'days').format('YYYY-MM-DD');
-    
+    const fechaHoy = moment.tz('America/Mexico_City').format('YYYY-MM-DD');
+    const fechaAyer = moment.tz('America/Mexico_City').subtract(1, 'days').format('YYYY-MM-DD');
     const registros = await Manual.findAll({
       where: {
-        fecha: {
-          [Op.or]: [hoy, ayer]
-        },
+        [Op.or]: [
+          {
+            fecha: {
+              [Op.gte]: new Date(`${fechaHoy}T00:00:00`),
+              [Op.lt]: new Date(`${fechaHoy}T23:59:59.999`)
+            }
+          },
+          {
+            fecha: {
+              [Op.gte]: new Date(`${fechaAyer}T00:00:00`),
+              [Op.lt]: new Date(`${fechaAyer}T23:59:59.999`)
+            }
+          }
+        ],
         name: {
           [Op.like]: '32 JOB COMPLETE%'
         }
@@ -46,21 +65,30 @@ const obtenerRegistrosManualHoyYAyer = async (req, res) => {
 };
 const obtenerRegistrosRazonesMermasHoyYAyer = async (req, res) => {
   try {
-    // Obtener fechas usando moment-timezone de forma local
-    const hoy = moment().format('YYYY-MM-DD');
-    const ayer = moment().subtract(1, 'days').format('YYYY-MM-DD');
-    
+    const fechaHoy = moment.tz('America/Mexico_City').format('YYYY-MM-DD');
+    const fechaAyer = moment.tz('America/Mexico_City').subtract(1, 'days').format('YYYY-MM-DD');
     const registros = await RazonesDeMerma.findAll({
       where: {
-        fecha: {
-          [Op.or]: [hoy, ayer]
-        }
+        [Op.or]: [
+          {
+            fecha: {
+              [Op.gte]: new Date(`${fechaHoy}T00:00:00`),
+              [Op.lt]: new Date(`${fechaHoy}T23:59:59.999`)
+            }
+          },
+          {
+            fecha: {
+              [Op.gte]: new Date(`${fechaAyer}T00:00:00`),
+              [Op.lt]: new Date(`${fechaAyer}T23:59:59.999`)
+            }
+          }
+        ]
       }
     });
     res.json({ registros });
   } catch (error) {
-    console.error("Error al obtener registros de ConteoMermas:", error);
-    res.status(500).json({ error: "Error al obtener los registros de conteo mermas" });
+    console.error("Error al obtener registros de Razones de Merma:", error);
+    res.status(500).json({ error: "Error al obtener los registros de razones de merma" });
   }
 };
 export { 
