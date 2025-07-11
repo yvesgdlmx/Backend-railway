@@ -44,6 +44,7 @@ if (!fs.existsSync(uploadsDir)) {
 } else {
   console.log('Carpeta "uploads" ya existe');
 }
+
 // Servir archivos estáticos desde la carpeta "uploads"
 app.use('/uploads', express.static(uploadsDir));
 
