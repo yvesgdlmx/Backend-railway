@@ -7,4 +7,5 @@ router.get('/reportes/wiptotal/:anio/:mes/:dia', obtenerWipTotal);
 router.get('/reportes/wiptotal/rango/:anioInicio/:mesInicio/:diaInicio/:anioFin/:mesFin/:diaFin', obtenerWipTotalPorRango);
 router.get('/reportes/razones/:anio/:mes/:dia', obtenerRazones)
 
+
 export default router;

@@ -93,8 +93,110 @@ const obtenerRegistrosPorFecha = async (req, res) => {
     }
   };
 
+  const obtenerRegistrosPorSemana = async (req, res) => {
+  try {
+    const { anio, semana } = req.params;
+    
+    // Validar que los parámetros sean números
+    if (!Number(anio) || !Number(semana)) {
+      return res.status(400).json({ error: "El año y la semana deben ser números" });
+    }
+    
+    const lunesSemana = moment().year(Number(anio)).isoWeek(Number(semana)).startOf("isoWeek");
+    const domingoSemana = lunesSemana.clone().endOf("isoWeek"); // domingo de la semana
+    const diaAnterior = lunesSemana.clone().subtract(1, "day"); // domingo inmediatamente anterior
+    
+    // Convertir las fechas a formato "YYYY-MM-DD"
+    const fechaDiaAnterior = diaAnterior.format("YYYY-MM-DD");
+    const fechaInicioSemana = lunesSemana.format("YYYY-MM-DD");
+    const fechaFinSemana = domingoSemana.format("YYYY-MM-DD");
+    
+    // Definir patrones de búsqueda para el campo "name"
+    const patron1 = "19 LENS LOG-SF%";
+    const patron2 = "20 LENS LOG-FIN%";
+    
+    const registros = await Manual.findAll({
+      where: {
+        [Op.and]: [
+          {
+            name: {
+              [Op.or]: [
+                { [Op.like]: patron1 },
+                { [Op.like]: patron2 }
+              ]
+            }
+          },
+          {
+            [Op.or]: [
+              { fecha: fechaDiaAnterior },
+              { fecha: { [Op.between]: [fechaInicioSemana, fechaFinSemana] } }
+            ]
+          }
+        ]
+      },
+      order: [['fecha', 'ASC']]
+    });
+    
+    res.json({ registros });
+  
+  } catch (error) {
+    console.error("Error al obtener registros por semana:", error);
+    res.status(500).json({
+      error: "Error al obtener los registros por semana",
+      detalles: error.message
+    });
+  }
+};
+
+const obtenerRegistrosJobCompleteSemana = async (req, res) => {
+  try {
+    const ahora = moment().tz('America/Mexico_City');
+    let inicioSemana, finSemana, domingoAnteriorInicio, domingoAnteriorFin;
+
+    if (ahora.day() === 0 && ahora.hour() < 22) {
+      // Domingo antes de las 22:00, seguimos en la semana anterior
+      inicioSemana = ahora.clone().subtract(1, 'week').startOf('week').add(22, 'hours');
+    } else {
+      // Cualquier otro día, o domingo después de las 22:00
+      inicioSemana = ahora.clone().startOf('week').add(22, 'hours');
+    }
+    finSemana = inicioSemana.clone().add(6, 'days').add(23, 'hours').add(59, 'minutes').add(59, 'seconds');
+
+    // Domingo anterior completo (00:00 a 23:59:59)
+    domingoAnteriorInicio = inicioSemana.clone().startOf('day');
+    domingoAnteriorFin = domingoAnteriorInicio.clone().add(23, 'hours').add(59, 'minutes').add(59, 'seconds');
+
+    const registros = await Manual.findAll({
+      where: {
+        name: { [Op.like]: "32 JOB COMPLETE%" },
+        [Op.or]: [
+          {
+            fecha: {
+              [Op.gte]: inicioSemana.format('YYYY-MM-DD HH:mm:ss'),
+              [Op.lte]: finSemana.format('YYYY-MM-DD HH:mm:ss')
+            }
+          },
+          {
+            fecha: {
+              [Op.gte]: domingoAnteriorInicio.format('YYYY-MM-DD HH:mm:ss'),
+              [Op.lte]: domingoAnteriorFin.format('YYYY-MM-DD HH:mm:ss')
+            }
+          }
+        ]
+      },
+      order: [['fecha', 'ASC']]
+    });
+
+    res.json({ registros });
+  } catch (error) {
+    console.error("Error al obtener los registros de la semana laboral:", error);
+    res.status(500).json({ error: "Error al obtener los registros de la semana laboral" });
+  }
+};
 
 export {
     obtenerRegistrosHoyYAyer,
-    obtenerRegistrosPorFecha
-}
+    obtenerRegistrosPorFecha,
+    obtenerRegistrosPorSemana,
+    obtenerRegistrosJobCompleteSemana
+};
