@@ -8,4 +8,5 @@ router.get('/reportes/wiptotal/rango/:anioInicio/:mesInicio/:diaInicio/:anioFin/
 router.get('/reportes/razones/:anio/:mes/:dia', obtenerRazones)
 
 
+
 export default router;
