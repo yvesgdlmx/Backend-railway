@@ -36,6 +36,11 @@ const ResumenArTrabajos = db.define('resumen_ar_nvis', {
         allowNull: true,
         defaultValue: 0
     },
+    despues_de_ar: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0
+    },
     fecha_insercion: {
         type: DataTypes.DATE,
         allowNull: true
