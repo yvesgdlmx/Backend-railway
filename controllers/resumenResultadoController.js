@@ -30,9 +30,23 @@ const obtenerResumenResultados = async (req, res) => {
 
 const obtenerTodosLosRegistros = async (req, res) => {
     try {
+        const { anio } = req.params;
+        
+        let whereClause = {};
+        
+        if (anio) {
+            whereClause = {
+                diario: {
+                    [Op.between]: [`${anio}-01-01`, `${anio}-12-31`]
+                }
+            };
+        }
+        
         const registros = await ResumenResultado.findAll({
+            where: whereClause,
             order: [['diario', 'ASC']]
-        })
+        });
+        
         res.json(registros);
     } catch (error) {
         console.error("Error al obtener los registros de ResumenResultado:", error);
