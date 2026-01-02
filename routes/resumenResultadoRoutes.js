@@ -8,7 +8,7 @@ import {
 
 const router = express.Router();
 
-router.get('/resumen_resultados', obtenerResumenResultados);
+router.get('/resumen_resultados/:anio', obtenerResumenResultados);
 router.get('/resumen_resultados/todos', obtenerTodosLosRegistros);
 router.put('/actualizar_asistencias', actualizarAsistencias);
 router.put('/actualizar_metas_diarias', actualizarMetasDiarias);

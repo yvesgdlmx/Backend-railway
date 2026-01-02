@@ -1,10 +1,26 @@
 import ResumenResultado from "../models/ResumenResultado.js"
+import { Op } from 'sequelize';
 
 const obtenerResumenResultados = async (req, res) => {
     try {
+        const { anio } = req.params;
+        
+        let whereClause = {};
+        
+        // Si se proporciona un año, filtrar por ese año
+        if (anio) {
+            whereClause = {
+                diario: {
+                    [Op.between]: [`${anio}-01-01`, `${anio}-12-31`]
+                }
+            };
+        }
+        
         const registros = await ResumenResultado.findAll({
+            where: whereClause,
             order: [['diario', 'ASC']]
         });
+        
         res.json(registros);
     } catch (error) {
         console.error("Error al obtener los registros de ResumenResultado:", error);
