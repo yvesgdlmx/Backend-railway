@@ -105,7 +105,7 @@ const obtenerWipTotalPorRango = async (req, res) => {
         // Formatear fechas
         const registrosFormateados = registros.map(registro => ({
             ...registro.toJSON(),
-            fecha: moment(registro.fecha).tz('America/Mexico_City').format('YYYY-MM-DD')
+            fecha: moment(registro.fecha).format('YYYY-MM-DD')
         }));
 
         res.json({ registros: registrosFormateados });
