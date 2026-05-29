@@ -2,7 +2,7 @@ import express from 'express';
 
 import {
   obtenerWipPorFechaInsercion
-} from '../controllers/wipOperacionResumenController.js';
+} from '../controllers/WipOperacionResumenController.js';
 
 const router = express.Router();
 
