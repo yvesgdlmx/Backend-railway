@@ -35,6 +35,7 @@ import notasTurnosRoutes from './routes/notasTurnosRoutes.js'
 import resumenArRoutes from './routes/resumenArRoutes.js';
 import resumenResultadoRoutes from './routes/resumenResultadoRoutes.js'
 import wipOperacionResumenRoutes from './routes/wipOperacionResumenRoutes.js';
+import resumenTrabajosInkRoutes from './routes/resumenTrabajosInkRoutes.js';
 
 const app = express();
 app.use(express.json());
@@ -105,6 +106,7 @@ app.use('/api/reportes', wipTotalRoutes)
 app.use('/api/reportes', reportesEnviadosRoutes)
 app.use('/api/reportes', reporteResumenRoutes)
 app.use('/api/reportes', resumenArRoutes)
+app.use('/api/reportes', resumenTrabajosInkRoutes)
 app.use('/api/reportes', trabajosSinMovimientosRoutes)
 app.use('/api/reportes', resumenResultadoRoutes)
 app.use('/api/reportes', wipOperacionResumenRoutes)
