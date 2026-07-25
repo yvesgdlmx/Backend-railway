@@ -6,6 +6,7 @@ import {
 
 const router = express.Router();
 
+
 router.get('/wip_operacion_resumen_nvi/resumen/:anio/:mes/:dia', obtenerWipNviPorFechaInsercion);
 
 export default router;
